@@ -21,8 +21,7 @@ define(['jquery', 'ka-validator'], function ($, validator) {
      * set of alert messages. Handles de-duplication of errors.
      */
     function updateMessagesBox() {
-        var messages = []; //to de-dupe messages
-        messagesBox.val(alerts.map(function (alert) {
+        messagesBox.val(alerts.map(function (alert) { //process alerts into message strings
             var msg;
             switch (alert.type) {
             case validator.alertTypes.REQUIRED:
@@ -38,14 +37,14 @@ define(['jquery', 'ka-validator'], function ($, validator) {
                 msg = alert.message;
                 break;
             }
-
-            if (msg && messages.indexOf(msg) === -1) {
-                messages.push(msg);
-                return msg;
+            return msg;
+        }).sort().filter(function (value, index, arr) { //remove duplicates
+            if (index < 1) {
+                return true;
             } else {
-                return undefined;
+                return value !== arr[index - 1];
             }
-        }).reduce(function (prev, cur) {
+        }).reduce(function (prev, cur) { //reduce array of messages to single string
             if (cur) {
                 return prev + cur + '\n';
             } else {
