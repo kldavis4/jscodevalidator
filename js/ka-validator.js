@@ -1,4 +1,4 @@
-/*global define, Node, WorkerGlobalScope, Worker, self */
+/*global define, Node, WorkerGlobalScope, Worker, self, window */
 /*jslint plusplus: true */
 (function (root, factory) {
     'use strict';
@@ -34,7 +34,7 @@
             }
         }, false);
     }
-    
+
     /**
      * Checks if the AST has the specified node type
      * @param {Object} ast - The Abstract Syntax Tree object created by the parseCode method
@@ -44,9 +44,9 @@
     function hasNodeType(ast, nodeType) {
         if (ast) {
             return walk.findNodeAt(ast, null, null, nodeType);
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -116,7 +116,7 @@
                             mismatch = true;
                             break;
                         }
-                        
+
                         //Compare child nodes
                         if (!compareNodeToStructuralRule(astNode[memberName], ruleNode[memberName], options)) {
                             mismatch = true;
@@ -152,7 +152,7 @@
             return !mismatch;
         }
     }
-    
+
     /**
      * Parses the specified code returning an Abstract Syntax Tree object. If there is
      * an exception, an alert object is added to the alerts collection parameter and
@@ -193,16 +193,15 @@
     function evaluateStructuralRule(ast, rule, options) {
         if (rule) {
             return compareNodeToStructuralRule(ast, rule, options || {strict: true});
-        } else {
-            return true;
         }
+        return true;
     }
-    
+
     /**
      * Performs validation of the given javascript code checking that all the
      * node types specified in nodeTypes are present. For any node types not
      * present in the javascript code, an alert object will be created and added to
-     * a list of alerts. The alert object will consist of a boolean required=true 
+     * a list of alerts. The alert object will consist of a boolean required=true
      * field and a string type field. If the javascript cannot be parsed, a single
      * alert with the parser error message will be returned.
      *
@@ -239,12 +238,12 @@
 
         return alerts;
     }
-    
+
     /**
      * Performs validation of the given javascript code checking that all the
      * node types specified in nodeTypes are not present. For any node types
      * present in the javascript code, an alert object will be created and added to
-     * a list of alerts. The alert object will consist of a boolean disallowed=true 
+     * a list of alerts. The alert object will consist of a boolean disallowed=true
      * field and a string type field. If the javascript cannot be parsed, a single
      * alert with the parser error message will be returned.
      *
@@ -278,16 +277,16 @@
                 }
             }
         }
-        
+
         return alerts;
     }
-    
+
     /**
      * Performs validation of the given javascript code checking that all the
      * structural rules specified in the rules parameter are present. For any rules
      * that do not pass in the javascript code, an alert object will be created and added to
-     * a list of alerts. The alert object will consist of a message 
-     * field. If the javascript cannot be parsed, a single alert with the parser 
+     * a list of alerts. The alert object will consist of a message
+     * field. If the javascript cannot be parsed, a single alert with the parser
      * error message will be returned.
      *
      * @param {string} script - The javascript code string
@@ -350,53 +349,53 @@
 
         //Worker doesn't expose any functions
         return {};
-    } else {
-        if (!window.Worker) {
-            //Worker API is not available so the API functions perform
-            // validation directly using the API implementations of
-            // the evaluate methods
-            return {
-                alertTypes: alertTypes,
-                registerAlertListener: registerAlertListener,
-
-                evaluateRequired: function (script, nodeTypes) {
-                    if (alertListener) {
-                        alertListener(evaluateRequired(script, nodeTypes));
-                    }
-                },
-
-                evaluateDisallowed: function (script, nodeTypes) {
-                    if (alertListener) {
-                        alertListener(evaluateDisallowed(script, nodeTypes));
-                    }
-                },
-
-                evaluateStructural: function (script, rules, options) {
-                    if (alertListener) {
-                        alertListener(evaluateStructural(script, rules, options));
-                    }
-                }
-            };
-        } else {
-            //If Worker API is available the same API functions are returned but
-            // are not implemented directly and will write JSON job requests to 
-            // the worker instead of performing the evaluation directly
-            return {
-                alertTypes: alertTypes,
-                registerAlertListener: registerAlertListener,
-
-                evaluateRequired: function (script, nodeTypes) {
-                    worker.postMessage(JSON.stringify({job: 'evaluateRequired', script: script, nodeTypes: nodeTypes}));
-                },
-
-                evaluateDisallowed: function (script, nodeTypes) {
-                    worker.postMessage(JSON.stringify({job: 'evaluateDisallowed', script: script, nodeTypes: nodeTypes}));
-                },
-
-                evaluateStructural: function (script, rules, options) {
-                    worker.postMessage(JSON.stringify({job: 'evaluateStructural', script: script, rules: rules, options: options}));
-                }
-            };
-        }
     }
+
+    if (!window.Worker) {
+        //Worker API is not available so the API functions perform
+        // validation directly using the API implementations of
+        // the evaluate methods
+        return {
+            alertTypes: alertTypes,
+            registerAlertListener: registerAlertListener,
+
+            evaluateRequired: function (script, nodeTypes) {
+                if (alertListener) {
+                    alertListener(evaluateRequired(script, nodeTypes));
+                }
+            },
+
+            evaluateDisallowed: function (script, nodeTypes) {
+                if (alertListener) {
+                    alertListener(evaluateDisallowed(script, nodeTypes));
+                }
+            },
+
+            evaluateStructural: function (script, rules, options) {
+                if (alertListener) {
+                    alertListener(evaluateStructural(script, rules, options));
+                }
+            }
+        };
+    }
+
+    //If Worker API is available the same API functions are returned but
+    // are not implemented directly and will write JSON job requests to
+    // the worker instead of performing the evaluation directly
+    return {
+        alertTypes: alertTypes,
+        registerAlertListener: registerAlertListener,
+
+        evaluateRequired: function (script, nodeTypes) {
+            worker.postMessage(JSON.stringify({job: 'evaluateRequired', script: script, nodeTypes: nodeTypes}));
+        },
+
+        evaluateDisallowed: function (script, nodeTypes) {
+            worker.postMessage(JSON.stringify({job: 'evaluateDisallowed', script: script, nodeTypes: nodeTypes}));
+        },
+
+        evaluateStructural: function (script, rules, options) {
+            worker.postMessage(JSON.stringify({job: 'evaluateStructural', script: script, rules: rules, options: options}));
+        }
+    };
 }));

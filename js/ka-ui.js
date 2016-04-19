@@ -7,7 +7,7 @@ define(['jquery', 'ka-validator'], function ($, validator) {
         alerts,
         messagesBox,
         requiredElements = [],              //Required code elements
-        disallowedElements = [],            //Disallowed code elements        
+        disallowedElements = [],            //Disallowed code elements
         structuralRules,                    //Structural Rules
         structuralOptions = {strict: true}, //Structural rule options
         //ESTree Spec Statements & Declarations
@@ -41,15 +41,13 @@ define(['jquery', 'ka-validator'], function ($, validator) {
         }).sort().filter(function (value, index, arr) { //remove duplicates
             if (index < 1) {
                 return true;
-            } else {
-                return value !== arr[index - 1];
             }
+            return value !== arr[index - 1];
         }).reduce(function (prev, cur) { //reduce array of messages to single string
             if (cur) {
                 return prev + cur + '\n';
-            } else {
-                return prev;
             }
+            return prev;
         }, ''));
     }
 
@@ -64,10 +62,10 @@ define(['jquery', 'ka-validator'], function ($, validator) {
                 alerts.push(data[i]);
             }
         }
-        
+
         updateMessagesBox();
     }
-    
+
     /**
      * Execute all validation requests for the current script content
      */
@@ -83,7 +81,7 @@ define(['jquery', 'ka-validator'], function ($, validator) {
 
         validator.evaluateStructural(script, structuralRules, structuralOptions);
     }
-    
+
     /**
      * Makes handler function for the required / disallowed elements checkbox
      * When checked, that code element type gets added to the specified list.
@@ -107,7 +105,7 @@ define(['jquery', 'ka-validator'], function ($, validator) {
             validate();
         };
     }
-    
+
     /**
      * Makes the required & disallowed code elements checkboxes for the given code element type
      * @param {string} The code element type (eg. 'IfStatement')
@@ -139,10 +137,8 @@ define(['jquery', 'ka-validator'], function ($, validator) {
         init: function () {
             var i,
                 requiredControlPanel,
-                disallowedControlPanel,
-                elementType,
-                checkbox;
-            
+                disallowedControlPanel;
+
             //Register a listener for validation alerts
             validator.registerAlertListener(handleValidationAlerts);
 
@@ -154,30 +150,30 @@ define(['jquery', 'ka-validator'], function ($, validator) {
             editor = ace.edit('editor');
             editor.setTheme('ace/theme/monokai');
             editor.getSession().setMode('ace/mode/javascript');
-            editor.getSession().on('change', function (e) {
+            editor.getSession().on('change', function () {
                 validate();
             });
 
             requiredControlPanel = $('#required-elements-panel');
             disallowedControlPanel = $('#disallowed-elements-panel');
-            
+
             //Setup checkboxes for declaration code elements
             for (i = 0; i < ESTREE_DECLARATIONS.length; i++) {
                 makeCheckboxes(ESTREE_DECLARATIONS[i] + 'Declaration',
                                requiredControlPanel,
                                disallowedControlPanel);
             }
-            
+
             //Setup checkboxes for statement code elements
             for (i = 0; i < ESTREE_STATEMENTS.length; i++) {
                 makeCheckboxes(ESTREE_STATEMENTS[i] + 'Statement',
                                requiredControlPanel,
                                disallowedControlPanel);
             }
-            
+
             //Setup the input for general structural rules
             structuralRules = JSON.parse($('#structural-rules-input').val());
-            $('#structural-rules-input').on('change', function (evt) {
+            $('#structural-rules-input').on('change', function () {
                 try {
                     structuralRules = JSON.parse($('#structural-rules-input').val());
                 } catch (e) {
@@ -185,9 +181,9 @@ define(['jquery', 'ka-validator'], function ($, validator) {
                 }
                 validate();
             });
-            
+
             //Setup the input for the strict structural rules option
-            $('#structural-option-strict').on('change', function (evt) {
+            $('#structural-option-strict').on('change', function () {
                 structuralOptions.strict = this.checked;
                 validate();
             });

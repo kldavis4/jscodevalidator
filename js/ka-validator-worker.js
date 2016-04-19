@@ -9,7 +9,7 @@ requirejs.config({
     }
 });
 
-require(['ka-validator'], function (validator) {
+require(['ka-validator'], function () {
     'use strict';
     return {};
 });
