@@ -69,7 +69,7 @@
             member;
 
         //Rule node type doesn't match the AST node type
-        if (ruleNode.type !== astNode.type) {
+        if (ruleNode.type !== astNode.type && ruleNode.type !== 'Program') {
             mismatch = true;
         } else {
             //Consider all the members in the rule node

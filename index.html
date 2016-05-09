@@ -5,30 +5,36 @@
         <link href="css/style.css" rel="stylesheet" type="text/css">
     </head>
     <body>
-        <div id="editor"></div>
+        <div id="editor">
+            function test() {
+                if (test) {
+                    for (var i = 0; i< 100; i++ ) {}
+                }
+            }
+        </div>
         <div id="control-panel" class="control-panel">
             <h1>Code Validator Demo</h1>
             <span class="panel-label">Validation Messages</span>
             <textarea id="messages" class="messages"></textarea>
-            
+
             <span class="panel-label">Required</span>
             <div id="required-elements-panel" class="elements-panel"></div>
-            
+
             <span class="panel-label">Disallowed</span>
             <div id="disallowed-elements-panel" class="elements-panel"></div>
-            
+
             <span class="panel-label">General Structure</span>
             <textarea id="structural-rules-input" class="structural-rules-input">
-{  
+{
    "message":"For Statement Nested Within If Statement Needed",
-   "rule":{  
+   "rule":{
       "type":"Program",
-      "body":[  
-         {  
+      "body":[
+         {
             "type":"IfStatement",
-            "consequent":{  
+            "consequent":{
                "type":"BlockStatement",
-               "body":[{  
+               "body":[{
                   "type":"ForStatement"
                }]
             }
